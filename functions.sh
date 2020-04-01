@@ -21,7 +21,7 @@ check_result()
     if [ ! -z "${2}" ]; then
       print_out "${BST_RED}${2}${BST_DEFAULT_COLOR}"
     fi
-  exit 1
+  exit ${1}
   fi
 }
 
