@@ -61,10 +61,12 @@ print_noln()
 {
   if [ "${BST_VERBOSE}" = "0" ]; then
     print_noln_ "${*}" &
-    wait $!
-    string="${*}"
-    str_size=${#string}
+  else
+    print_out_ "${*}" &
   fi
+  wait $!
+  string="${*}"
+  str_size=${#string}
 }
 
 print_noln_()
@@ -91,54 +93,51 @@ print_out_()
 
 print_ok()
 {
-  if [ "${BST_VERBOSE}" = "0" ]; then
-    shift
-    print_ok_ &
-    wait $!
-  fi
+  shift
+  print_ok_ &
+  wait $!
 }
 
 print_ko()
 {
-  if [ "${BST_VERBOSE}" = "0" ]; then
-    shift
-    print_ko_ &
-    wait $!
-  fi
+  shift
+  print_ko_ &
+  wait $!
 }
 
 print_warn()
 {
-  if [ "${BST_VERBOSE}" = "0" ]; then
-    shift
-    print_warn_ &
-    wait $!
-  fi
+  shift
+  print_warn_ &
+  wait $!
 }
 
 print_ok_()
 {
   if [ "${BST_VERBOSE}" = "0" ]; then
     exec 1>&6 6>&-
+    column=$((BST_COLUMNS - str_size))
+    printf "%${column}s" "[${BST_GREEN}OK${BST_DEFAULT_COLOR}]"
+    echo
   fi
-  column=$((BST_COLUMNS - str_size))
-  printf "%${column}s\n" "[${BST_GREEN}OK${BST_DEFAULT_COLOR}]"
 }
 
 print_ko_()
 {
   if [ "${BST_VERBOSE}" = "0" ]; then
     exec 1>&6 6>&-
+    column=$((BST_COLUMNS - str_size))
+    printf "%${column}s" "[${BST_RED}KO${BST_DEFAULT_COLOR}]"
+    echo
   fi
-  column=$((BST_COLUMNS - str_size))
-  printf "%${column}s\n" "[${BST_RED}KO${BST_DEFAULT_COLOR}]"
 }
 
 print_warn_()
 {
   if [ "${BST_VERBOSE}" = "0" ]; then
     exec 1>&6 6>&-
+    column=$((BST_COLUMNS - str_size))
+    printf "%${column}s" "[${BST_ORANGE}--${BST_DEFAULT_COLOR}]"
+    echo
   fi
-  column=$((BST_COLUMNS - str_size))
-  printf "%${column}s\n" "[${BST_ORANGE}--${BST_DEFAULT_COLOR}]"
 }
