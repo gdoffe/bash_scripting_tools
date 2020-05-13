@@ -8,11 +8,13 @@
 
 # Generic tool functions to import in external scripts
 
-BST_COLUMNS=$(tput cols)
-BST_DEFAULT_COLOR=$(tput sgr0)
-BST_GREEN=$(tput setaf 2)
-BST_RED=$(tput setaf 1)
-BST_ORANGE=$(tput setaf 3)
+if [ -n $TERM ]; then
+  BST_COLUMNS=$(tput cols)
+  BST_DEFAULT_COLOR=$(tput sgr0)
+  BST_GREEN=$(tput setaf 2)
+  BST_RED=$(tput setaf 1)
+  BST_ORANGE=$(tput setaf 3)
+fi
 
 check_result()
 {
@@ -112,32 +114,31 @@ print_warn()
   wait $!
 }
 
-print_ok_()
+print_state_()
 {
   if [ "${BST_VERBOSE}" = "0" ]; then
     exec 1>&6 6>&-
-    column=$((BST_COLUMNS - str_size))
-    printf "%${column}s" "[${BST_GREEN}OK${BST_DEFAULT_COLOR}]"
+    if [ -n "$BST_COLUMNS" ]; then
+      column="%$((BST_COLUMNS - str_size))s"
+    else
+      column=" %s"
+    fi
+    printf "${column}" "$1"
     echo
   fi
+}
+
+print_ok_()
+{
+  print_state_ "[${BST_GREEN}OK${BST_DEFAULT_COLOR}]"
 }
 
 print_ko_()
 {
-  if [ "${BST_VERBOSE}" = "0" ]; then
-    exec 1>&6 6>&-
-    column=$((BST_COLUMNS - str_size))
-    printf "%${column}s" "[${BST_RED}KO${BST_DEFAULT_COLOR}]"
-    echo
-  fi
+  print_state_ "[${BST_RED}KO${BST_DEFAULT_COLOR}]"
 }
 
 print_warn_()
 {
-  if [ "${BST_VERBOSE}" = "0" ]; then
-    exec 1>&6 6>&-
-    column=$((BST_COLUMNS - str_size))
-    printf "%${column}s" "[${BST_ORANGE}--${BST_DEFAULT_COLOR}]"
-    echo
-  fi
+  print_state_ "[${BST_ORANGE}--${BST_DEFAULT_COLOR}]"
 }
